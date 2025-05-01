@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val isRegistered = remember { mutableStateOf(false) }
             FoodTogetherTheme(darkTheme = isSystemInDarkTheme()) {
                 Main()
             }
@@ -43,11 +44,11 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val navController = rememberNavController()
     Column() {
-        Button(onClick = {}) {
-            Text(text ="Text")
-        }
+
         NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
-            composable(NavRoutes.Home.route) { Home() }
+            composable(NavRoutes.Home.route) { Home(onLoginSuccess = {
+                navController.navigate(NavRoutes.Contacts.route)
+            }) }
             composable(NavRoutes.Contacts.route) { Contacts()  }
             composable(NavRoutes.About.route) { About() }
         }
