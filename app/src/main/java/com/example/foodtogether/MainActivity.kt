@@ -25,14 +25,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
-
+import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val isRegistered = remember { mutableStateOf(false) }
             FoodTogetherTheme(darkTheme = isSystemInDarkTheme()) {
                 Main()
             }
@@ -46,9 +45,7 @@ fun Main() {
     Column() {
 
         NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
-            composable(NavRoutes.Home.route) { Home(onLoginSuccess = {
-                navController.navigate(NavRoutes.Contacts.route)
-            }) }
+            composable(NavRoutes.Home.route) { Home()}
             composable(NavRoutes.Contacts.route) { Contacts()  }
             composable(NavRoutes.About.route) { About() }
         }

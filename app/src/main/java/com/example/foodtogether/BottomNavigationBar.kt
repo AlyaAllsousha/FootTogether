@@ -1,5 +1,6 @@
 package com.example.foodtogether
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem

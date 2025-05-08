@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">FoodTogether</string>
+    <string name="username_not_long_enough">Имя должно содержать хотя бы 1 символ</string>
+    <string name="invalid_email_format">Неверный формат почты</string>
+    <string name="password_not_long_enough">Пароль должен содержать минимум 8 символов</string>
+    <string name="password_not_enough_uppercase">В пароле должны быть заглавные буквы</string>
+    <string name="password_not_enough_digits">В пароле должны быть цифры</string>
+    <string name="username">В пароле должны быть цифры</string>
+
 </resources>

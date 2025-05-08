@@ -1,7 +1,10 @@
 plugins {
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -40,6 +43,13 @@ android {
 }
 
 dependencies {
+    implementation("com.google.dagger:hilt-android:2.50")
+// required if using navigation together with hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.crashlytics.buildtools)
+    ksp("com.google.dagger:hilt-compiler:2.50")
+    ksp("com.google.dagger:hilt-android-compiler:2.50")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -52,6 +62,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
