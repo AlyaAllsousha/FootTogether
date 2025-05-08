@@ -24,8 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.foodtogether.loginSignup.LogIn
+import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
-import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
 
@@ -41,13 +42,17 @@ class MainActivity : ComponentActivity() {
 }
 @Composable
 fun Main() {
+
     val navController = rememberNavController()
     Column() {
 
         NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
-            composable(NavRoutes.Home.route) { Home()}
+            composable(NavRoutes.Home.route) { Home(null, navController)}
             composable(NavRoutes.Contacts.route) { Contacts()  }
             composable(NavRoutes.About.route) { About() }
+            composable(NavRoutes.Login.route) { LogIn(navController) }
+            composable(NavRoutes.SignUp.route) { SignUp(navController) }
+
         }
         BottomNavigationBar(navController = navController)
     }

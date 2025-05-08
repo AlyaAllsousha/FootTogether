@@ -1,6 +1,5 @@
 plugins {
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -43,14 +42,12 @@ android {
 }
 
 dependencies {
-    implementation("com.google.dagger:hilt-android:2.50")
-// required if using navigation together with hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.crashlytics.buildtools)
-    ksp("com.google.dagger:hilt-compiler:2.50")
-    ksp("com.google.dagger:hilt-android-compiler:2.50")
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-auth")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
