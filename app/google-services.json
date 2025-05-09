@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153343371021",
+    "project_id": "foodtogether-5ea50",
+    "storage_bucket": "foodtogether-5ea50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153343371021:android:16a67a38287a54ffaaf244",
+        "android_client_info": {
+          "package_name": "com.example.foodtogether"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtk6xVNVgkIHGJkwd6UTYUbSvSNdAO8Nk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

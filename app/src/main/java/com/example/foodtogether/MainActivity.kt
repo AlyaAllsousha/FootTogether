@@ -47,7 +47,7 @@ fun Main() {
     Column() {
 
         NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
-            composable(NavRoutes.Home.route) { Home(null, navController)}
+            composable(NavRoutes.Home.route) { Home( navController)}
             composable(NavRoutes.Contacts.route) { Contacts()  }
             composable(NavRoutes.About.route) { About() }
             composable(NavRoutes.Login.route) { LogIn(navController) }

@@ -1,5 +1,6 @@
 package com.example.foodtogether.loginSignup
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,12 +34,19 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SignUp(navController: NavController){
     val auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var password_rep by remember { mutableStateOf("") }
+
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
@@ -59,7 +67,7 @@ fun SignUp(navController: NavController){
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
-            text ="Авторизация"
+            text ="Регистрация"
         )
         Spacer(Modifier.height(24.dp))
 
@@ -83,20 +91,51 @@ fun SignUp(navController: NavController){
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
+        Spacer(Modifier.height(16.dp))
+
+        //поле проверки пароля
+        OutlinedTextField(
+            value = password_rep,
+            onValueChange = { password_rep = it },
+            label = { Text("Повторите пароль") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
 
         Spacer(Modifier.height(24.dp))
 
         // Кнопка входа
         Button(
             onClick = {
+                focusManager.clearFocus()
                 if (email.isBlank() || password.isBlank()) {
                     error = "Заполните все поля"
-                } else {
+                }
+                else if(password_rep != password){
+                    error = "Пароли не совпадают"
+                }
+                else {
                     isLoading = true
                     error = null
-                    isLoading = false
                     if (email.contains("@") && password.length >= 6) {
-                        SignUpFun(auth, email, password)
+                        SignUpFun(
+                            auth = auth,
+                            email = email,
+                            password = password,
+                            onSuccess = {
+                                // Только при успехе переходим на home
+                                navController.navigate("home") {
+                                    popUpTo("signup") { inclusive = true }
+                                }
+                            },
+                            onError = { errorMessage ->
+                                isLoading = false
+                                error = errorMessage
+                            }
+                        )
+
+
                     } else {
                         error = "Неверный email или пароль"
                     }
@@ -113,7 +152,7 @@ fun SignUp(navController: NavController){
 
                 )
             } else {
-                Text("Войти")
+                Text("Зарегестрироваться")
             }
         }
 
@@ -127,19 +166,24 @@ fun SignUp(navController: NavController){
         }
     }
 }
-private fun SignUpFun(auth: FirebaseAuth, email: String, passwor: String){
-    auth.createUserWithEmailAndPassword(email, passwor)
+private fun SignUpFun(
+    auth: FirebaseAuth,
+    email: String,
+    password: String,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Sign in success, update UI with the signed-in user's information
-                val user = auth.currentUser
-
-                //Home(user)
+                onSuccess() // Успешная регистрация
             } else {
-                // If sign in fails, display a message to the user.
-                //Home(null)
+                // Получаем понятное сообщение об ошибке
+                val errorMsg = task.exception?.message ?: "Неизвестная ошибка регистрации"
+                onError(errorMsg)
             }
         }
 }
+
 
 

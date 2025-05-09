@@ -51,7 +51,6 @@ fun LogIn(navController: NavController){
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +67,7 @@ fun LogIn(navController: NavController){
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
-            text ="Авторизация"
+            text ="Вход"
         )
         Spacer(Modifier.height(24.dp))
 
@@ -109,27 +108,22 @@ fun LogIn(navController: NavController){
                 else {
                     isLoading = true
                     error = null
-
-                    // Запускаем аутентификацию в GlobalScope
-                    GlobalScope.launch {
-                        try {
-                            val result = async {
-                                LogInFun(auth, email, password)
-                            }.await()
-
-                            withContext(Dispatchers.Main) {
-                                isLoading = false
-                                navController.navigate("home") {
-                                    // Очищаем стек до home, чтобы кнопка "Назад" не возвращала на login
-                                    popUpTo("login") { inclusive = true }}
+                    LogInFun(
+                        auth = auth,
+                        email = email,
+                        password = password,
+                        onSuccess = {
+                            // Только при успехе переходим на home
+                            navController.navigate("home") {
+                                popUpTo("signup") { inclusive = true }
                             }
-                        } catch (e: Exception) {
-                            withContext(Dispatchers.Main) {
-                                isLoading = false
-                                error = e.message ?: "Ошибка аутентификации"
-                            }
+                        },
+                        onError = { errorMessage ->
+                            isLoading = false
+                            error = errorMessage
                         }
-                    }
+                    )
+
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -154,20 +148,23 @@ fun LogIn(navController: NavController){
         }
     }
 }
-private fun LogInFun(auth: FirebaseAuth, email: String, passwor: String){
-    auth.createUserWithEmailAndPassword(email, passwor)
+private fun LogInFun(
+    auth: FirebaseAuth,
+    email: String,
+    password: String,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Sign in success, update UI with the signed-in user's information
-                val user = auth.currentUser
-
-                //Home(user)
+                onSuccess() // Успешная регистрация
             } else {
-                // If sign in fails, display a message to the user.
-                //Home(null)
+                // Получаем понятное сообщение об ошибке
+                val errorMsg = task.exception?.message ?: "Неизвестная ошибка регистрации"
+                onError(errorMsg)
             }
         }
 }
-
 
 

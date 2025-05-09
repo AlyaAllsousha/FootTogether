@@ -17,12 +17,12 @@ private val DarkColorScheme = darkColorScheme(
     secondary = Pink80,
     tertiary = Pink40,
     surface =Pink80,
-
     primaryContainer = OrangeChoosse80, //выделенный
     onPrimary = black80,//цвет кнопки
     onTertiary = black80,
     onBackground = black80,
     onSurface = black80,
+    onSecondaryContainer = Pink80,
     onSurfaceVariant = black80
     )
 
@@ -30,7 +30,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = OrangeChoosse80, //кнопки
 
-    onPrimary = black80,//цвет кнопки
+    onPrimary = White,//цвет кнопки
     primaryContainer = OrangeChoosse80, //выделенный
 
     secondary = Pink80,
@@ -42,7 +42,6 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = black80,
     onBackground = black80,
     onSurface = black80 //цвет активной панели навигации
-
 )
 
 @Composable
