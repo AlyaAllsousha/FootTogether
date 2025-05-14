@@ -135,8 +135,8 @@ fun SignUp(navController: NavController){
                             }
                         )
 
-
                     } else {
+                        isLoading = false
                         error = "Неверный email или пароль"
                     }
                 }

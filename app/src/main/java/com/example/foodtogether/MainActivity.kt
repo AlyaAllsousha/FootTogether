@@ -19,12 +19,15 @@ import com.example.foodtogether.loginSignup.LogIn
 import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.mapview.MapView
 
 class MainActivity : ComponentActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapKitFactory.setApiKey("8b81bd28-ac43-4df2-9d03-8d76eaffd5b3\n")
+        MapKitFactory.setApiKey("8b81bd28-ac43-4df2-9d03-8d76eaffd5b3")
+        MapKitFactory.initialize(this)
         setContent {
             FoodTogetherTheme(darkTheme = isSystemInDarkTheme()) {
                 Main()
@@ -32,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
         }
     }
+
 }
 @Composable
 fun Main() {
