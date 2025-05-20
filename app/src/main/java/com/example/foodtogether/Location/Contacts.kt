@@ -139,8 +139,9 @@ import kotlin.math.roundToInt
                 val user = hashMapOf(
                     "userId" to userId,
                     "email" to email,
+                    "groupId" to listOf(""),
                     "position" to GeoPoint(state.latitude, state.longitude),
-                    "timestamp" to FieldValue.serverTimestamp()
+                    "timestamp" to FieldValue.serverTimestamp(),
                 )
                 if(abs(state.latitude - lat.value) > 0.01 || abs(state.longitude - longt.value) > 0.01 ) {
                     db.collection("users_location")
@@ -161,7 +162,7 @@ import kotlin.math.roundToInt
     }
 
     @Composable
-    private fun PermissionRequestScreen(onRequestPermission: () -> Unit) {
+    fun PermissionRequestScreen(onRequestPermission: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

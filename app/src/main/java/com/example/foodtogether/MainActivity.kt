@@ -15,11 +15,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.foodtogether.Location.Contacts
+import com.example.foodtogether.Groups.About
 import com.example.foodtogether.loginSignup.LogIn
 import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.mapview.MapView
 
 class MainActivity : ComponentActivity() {
 
@@ -46,7 +46,7 @@ fun Main() {
         NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
             composable(NavRoutes.Home.route) { Home( navController)}
             composable(NavRoutes.Contacts.route) { Contacts(navController)  }
-            composable(NavRoutes.About.route) { About() }
+            composable(NavRoutes.About.route) { About(navController) }
             composable(NavRoutes.Login.route) { LogIn(navController) }
             composable(NavRoutes.SignUp.route) { SignUp(navController) }
 

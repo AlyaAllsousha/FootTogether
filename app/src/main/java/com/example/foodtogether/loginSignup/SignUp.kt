@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -42,13 +43,16 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun SignUp(navController: NavController){
-    val auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var password_rep by remember { mutableStateOf("") }
-
+    var name by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    val auth = Firebase.auth
+
+    val db = FirebaseFirestore.getInstance()
+    val nameRef = db.collection("user_names")
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -78,6 +82,16 @@ fun SignUp(navController: NavController){
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        Spacer(Modifier.height(16.dp))
+
+        // Поле имя
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Имя пользователя") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
 
         Spacer(Modifier.height(16.dp))
@@ -109,13 +123,14 @@ fun SignUp(navController: NavController){
         Button(
             onClick = {
                 focusManager.clearFocus()
-                if (email.isBlank() || password.isBlank()) {
+                if (email.isBlank() || password.isBlank() || name.isBlank()) {
                     error = "Заполните все поля"
                 }
                 else if(password_rep != password){
                     error = "Пароли не совпадают"
                 }
                 else {
+
                     isLoading = true
                     error = null
                     if (email.contains("@") && password.length >= 6) {
@@ -123,7 +138,22 @@ fun SignUp(navController: NavController){
                             auth = auth,
                             email = email,
                             password = password,
+                            name = name,
                             onSuccess = {
+                                val user = hashMapOf(
+                                    "userId" to auth.currentUser?.uid,
+                                    "name" to name
+                                )
+                                   nameRef
+                                        .document(auth.currentUser!!.uid)
+                                        .set(user)
+                                        .addOnSuccessListener {
+                                            Log.d("Firestore SignUp", "Документ успешно добавлен")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w("Firestore", "Ошибка добавления документа", e)
+                                        }
+
                                 // Только при успехе переходим на home
                                 navController.navigate("home") {
                                     popUpTo("signup") { inclusive = true }
@@ -170,6 +200,7 @@ private fun SignUpFun(
     auth: FirebaseAuth,
     email: String,
     password: String,
+    name: String,
     onSuccess: () -> Unit,
     onError: (String) -> Unit
 ) {
@@ -177,6 +208,7 @@ private fun SignUpFun(
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onSuccess() // Успешная регистрация
+
             } else {
                 // Получаем понятное сообщение об ошибке
                 val errorMsg = task.exception?.message ?: "Неизвестная ошибка регистрации"

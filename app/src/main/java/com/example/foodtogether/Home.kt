@@ -2,9 +2,12 @@ package com.example.foodtogether
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.util.Log
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,10 +53,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.foodtogether.loginSignup.LogIn
 import com.example.foodtogether.loginSignup.SignUp
+import com.example.foodtogether.shops.shops
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
+import kotlin.math.abs
 
 
 @Composable
@@ -60,9 +69,37 @@ import com.google.firebase.auth.auth
 
 fun Home(  navController: NavController?){
     val auth = Firebase.auth
+    var name = remember { mutableStateOf("") }
+    val db = FirebaseFirestore.getInstance()
+    val nameRef = db.collection("user_names")
+    val userId = auth.currentUser?.uid ?:""
+    val email = auth.currentUser?.email ?:""
+
+    LaunchedEffect (Unit){
+        if(userId!="") {
+            val user = hashMapOf(
+                "userId" to userId,
+                "email" to email,
+                "groupId" to listOf(""),
+                "position" to GeoPoint(0.0,0.0),
+                "timestamp" to FieldValue.serverTimestamp(),
+            )
+                db.collection("users_location")
+                    .document(userId)
+                    .set(user)
+                    .addOnSuccessListener {
+                        Log.d("Firestore", "Документ успешно добавлен")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("Firestore", "Ошибка добавления документа", e)
+                    }
+        }
+    }
     if(auth.currentUser == null) {
         Column(
-            modifier = Modifier.fillMaxWidth()  .padding(32.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(22.dp)
             ,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -107,17 +144,28 @@ fun Home(  navController: NavController?){
         }
     }
     else{
+        nameRef.document(auth.currentUser!!.uid)
+                    .get()
+                    .addOnSuccessListener {doc->
+                        name.value= doc.getString("name").toString()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Error getting name", e)
+                    }
         Column(
             modifier = Modifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.secondary)
+
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "${auth.currentUser?.email}")
+                Log.d("nameAtHome =", name.value)
+                Text(text = name.value)
                 Button(onClick = {
                     auth.signOut()
                     navController?.navigate("home") {
@@ -127,6 +175,7 @@ fun Home(  navController: NavController?){
                     Text(text = "Выйти")
                 }
             }
+            shops()
         }
 
     }
