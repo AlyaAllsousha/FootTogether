@@ -89,7 +89,11 @@ fun SelectGroup(
 
     DisposableEffect(showDialog) {
         if (!showDialog && userId != null) {
+            Log.d("Firestore", "Начало обновления данных")
+
             viewModel.loadUserGroups(userId)
+            Log.d("Firestore", "Конец обновления данных")
+
         }
         onDispose { }
     }
@@ -173,7 +177,7 @@ fun SelectGroup(
                                 onClick = {}
 
                             ) {
-                                Text(modifier = Modifier.fillMaxWidth(),
+                                Text(modifier = Modifier.fillMaxWidth().padding(5.dp, 10.dp),
                                     textAlign = TextAlign.Left,
                                     color = Color.Black,
                                     fontWeight = FontWeight.Normal,
@@ -184,7 +188,6 @@ fun SelectGroup(
                     }
                 }
             }
-
         }
     }
 }

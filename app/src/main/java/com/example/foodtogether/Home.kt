@@ -56,51 +56,50 @@ import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.shops.shops
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.SetOptions
 import kotlin.math.abs
 
 
 @Composable
 
 
-fun Home(  navController: NavController?){
+fun Home(  navController: NavController?) {
     val auth = Firebase.auth
     var name = remember { mutableStateOf("") }
     val db = FirebaseFirestore.getInstance()
-    val nameRef = db.collection("user_names")
-    val userId = auth.currentUser?.uid ?:""
-    val email = auth.currentUser?.email ?:""
+    val userId = auth.currentUser?.uid ?: ""
+    val email = auth.currentUser?.email ?: ""
 
-    LaunchedEffect (Unit){
-        if(userId!="") {
+    LaunchedEffect(Unit) {
+        if (userId != "") {
             val user = hashMapOf(
                 "userId" to userId,
                 "email" to email,
-                "groupId" to listOf(""),
-                "position" to GeoPoint(0.0,0.0),
+                "position" to GeoPoint(0.0, 0.0),
                 "timestamp" to FieldValue.serverTimestamp(),
             )
-                db.collection("users_location")
-                    .document(userId)
-                    .set(user)
-                    .addOnSuccessListener {
-                        Log.d("Firestore", "Документ успешно добавлен")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("Firestore", "Ошибка добавления документа", e)
-                    }
+            db.collection("users_location")
+                .document(userId)
+                .set(user, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.d("Firestore", "Документ успешно добавлен")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("Firestore", "Ошибка добавления документа", e)
+                }
         }
     }
-    if(auth.currentUser == null) {
+    if (auth.currentUser == null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(22.dp)
-            ,
+                .padding(22.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
 
@@ -123,35 +122,36 @@ fun Home(  navController: NavController?){
                 )
             Spacer(Modifier.height(24.dp))
 
-            Button(onClick = {
-                navController?.navigate("login") {
-                    popUpTo("home") { inclusive = false } // Очистка стека навигации
-                }
-            },
-                modifier = Modifier.size(210.dp, 50.dp)) {
+            Button(
+                onClick = {
+                    navController?.navigate("login") {
+                        popUpTo("home") { inclusive = false } // Очистка стека навигации
+                    }
+                },
+                modifier = Modifier.size(210.dp, 50.dp)
+            ) {
                 Text("Войти")
             }
             Spacer(Modifier.height(24.dp))
-            Button(onClick = {
-                navController?.navigate("signup") {
-                    popUpTo("home") { inclusive = false } // Очистка стека навигации
-                }
-            },
-                modifier = Modifier.size(210.dp, 50.dp)) {
+            Button(
+                onClick = {
+                    navController?.navigate("signup") {
+                        popUpTo("home") { inclusive = false } // Очистка стека навигации
+                    }
+                },
+                modifier = Modifier.size(210.dp, 50.dp)
+            ) {
 
                 Text("Зарегестрироваться")
             }
         }
-    }
-    else{
-        nameRef.document(auth.currentUser!!.uid)
-                    .get()
-                    .addOnSuccessListener {doc->
-                        name.value= doc.getString("name").toString()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("Firestore", "Error getting name", e)
-                    }
+    } else {
+            getName(auth.currentUser!!.uid, db, onSucc = {
+                name.value = it
+            })
+
+
+
         Column(
             modifier = Modifier.fillMaxSize()
                 .background(MaterialTheme.colorScheme.secondary)
@@ -180,3 +180,15 @@ fun Home(  navController: NavController?){
 
     }
 }
+     fun getName(userId: String, db: FirebaseFirestore, onSucc: (String) -> Unit) {
+        val nameRef = db.collection("user_names")
+        nameRef.document(userId)
+            .get()
+            .addOnSuccessListener { doc ->
+                onSucc(doc.getString("name").toString())
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error getting name", e)
+            }
+    }
+

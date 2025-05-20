@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 
 import com.example.foodtogether.R
+import com.example.foodtogether.getName
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -72,8 +73,9 @@ fun YandexMapScreen(latitude: Double, longitude: Double) {
     val markers = remember { mutableStateMapOf<Point, PlacemarkMapObject>() }
 
     var showDialog by remember { mutableStateOf(false) }
-    var selectedUser by remember { mutableStateOf<String?>(null) }
+    var selectedUser by remember { mutableStateOf<String>("") }
     var selectedUserName by remember { mutableStateOf<String>("") }
+
 
     LaunchedEffect(Unit) {
         MapKitFactory.getInstance().onStart()
@@ -114,7 +116,7 @@ fun YandexMapScreen(latitude: Double, longitude: Double) {
             this?.addTapListener { _, _ ->
                 Log.d("MapClick", "Маркер кликнут: (${point.latitude}, ${point.longitude}, $user)")
                 showDialog = true
-                selectedUser = user
+                selectedUser = user!!
                 true
             }
         }
@@ -224,24 +226,28 @@ fun YandexMapScreen(latitude: Double, longitude: Double) {
             )
         }
     }
-    nameRef.document(selectedUser.toString())
-        .get()
-        .addOnSuccessListener {doc->
-            selectedUserName = doc.getString("name").toString()
-        }
-        .addOnFailureListener { e ->
-            Log.e("Firestore", "Error getting name of selected user", e)
-        }
+    if(selectedUser != "") {
+        getName(selectedUser, db, onSucc = {
+            selectedUserName = it
+        })
+    }
+//    nameRef.document(selectedUser.toString())
+//        .get()
+//        .addOnSuccessListener {doc->
+//            selectedUserName = doc.getString("name").toString()
+//        }
+//        .addOnFailureListener { e ->
+//            Log.e("Firestore", "Error getting name of selected user", e)
+//        }
         MergeRequestDialog(
             user = selectedUser,
             userName = selectedUserName,
             show = showDialog,
-            locationRef = locationsRef,
             onDismiss = { showDialog = false },
+            db = db,
             onConfirm = {
-                // логика объединения
                 showDialog = false
-               GroupUsers(selectedUser, locationsRef, groupsRef)
+                AddSelectedInGroup(selectedUser, db, it)
             }
         )
 
@@ -257,3 +263,4 @@ fun YandexMapScreen(latitude: Double, longitude: Double) {
         }
 
 }
+

@@ -43,6 +43,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yandex.mapkit.MapKitFactory
@@ -139,14 +140,13 @@ import kotlin.math.roundToInt
                 val user = hashMapOf(
                     "userId" to userId,
                     "email" to email,
-                    "groupId" to listOf(""),
                     "position" to GeoPoint(state.latitude, state.longitude),
                     "timestamp" to FieldValue.serverTimestamp(),
                 )
                 if(abs(state.latitude - lat.value) > 0.01 || abs(state.longitude - longt.value) > 0.01 ) {
                     db.collection("users_location")
                         .document(userId)
-                        .set(user)
+                        .set(user, SetOptions.merge())
                         .addOnSuccessListener {
                             Log.d("Firestore", "Документ успешно добавлен")
                         }
