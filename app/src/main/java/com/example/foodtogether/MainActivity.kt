@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.foodtogether.Location.Contacts
 import com.example.foodtogether.Groups.About
+import com.example.foodtogether.Groups.Bascket
+import com.example.foodtogether.Groups.ChooseShop
 import com.example.foodtogether.loginSignup.LogIn
 import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
@@ -48,8 +50,11 @@ fun Main() {
             composable(NavRoutes.Contacts.route) { Contacts(navController)  }
             composable(NavRoutes.About.route) { About(navController) }
             composable(NavRoutes.Login.route) { LogIn(navController) }
+            composable(NavRoutes.Bascket.route) { Bascket(navController) }
             composable(NavRoutes.SignUp.route) { SignUp(navController) }
-
+            composable(NavRoutes.ChooseShop.route+"/{groupId}") { stackEntry ->
+                val groupId = stackEntry.arguments?.getString("groupId") ?:""
+                ChooseShop(navController,groupId ) }
         }
         BottomNavigationBar(navController = navController)
     }

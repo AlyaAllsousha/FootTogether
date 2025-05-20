@@ -43,7 +43,9 @@ import androidx.navigation.NavController
 import com.example.foodtogether.loginSignup.AuthScreen
 import com.example.foodtogether.ui.theme.White
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.toList
@@ -58,7 +60,7 @@ fun About(navController: NavController) {
     }
     else {
         if(selectedGroup.value==""){
-            SelectGroup(auth.uid)
+            SelectGroup(auth.uid, navController)
         }
     }
 }
@@ -66,12 +68,13 @@ fun About(navController: NavController) {
 @Composable
 fun SelectGroup(
     userId: String?,
+    navController: NavController,
     viewModel: GroupsViewModel = viewModel(),
-) {
+
+    ) {
     val groupsState by viewModel.groupsState.collectAsState()
     val db = Firebase.firestore
     var showDialog by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         viewModel.loadUserGroups(userId)
 
@@ -174,8 +177,13 @@ fun SelectGroup(
                                 ),
                                 shape = RoundedCornerShape(10.dp),
                                 elevation = ButtonDefaults.buttonElevation(4.dp),
-                                onClick = {}
+                                onClick = {
+                                    selectGroup(db,group.groupId, userId!!)
+                                    navController.navigate("chooseShop/${group.groupId}"){
+                                        popUpTo("about") { inclusive = false }
 
+                                    }
+                                }
                             ) {
                                 Text(modifier = Modifier.fillMaxWidth().padding(5.dp, 10.dp),
                                     textAlign = TextAlign.Left,
@@ -190,6 +198,21 @@ fun SelectGroup(
             }
         }
     }
+}
+fun selectGroup(db:FirebaseFirestore, groupId:String, userId: String){
+    val group = hashMapOf(
+        "activeGroup" to groupId
+    )
+    db.collection("users_location")
+        .document(userId)
+        .set(group, SetOptions.merge())
+        .addOnSuccessListener {
+            Log.d("Firestore", "Активная группа успешно добавлена пользователю")
+        }
+        .addOnFailureListener {
+            Log.d("Firestore", "Ошибка добавления активной группы к пользователю", it)
+        }
+
 }
 
 
