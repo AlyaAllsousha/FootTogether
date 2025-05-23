@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -53,6 +54,7 @@ fun SignUp(navController: NavController){
 
     val db = FirebaseFirestore.getInstance()
     val nameRef = db.collection("user_names")
+
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -144,18 +146,30 @@ fun SignUp(navController: NavController){
                                     "userId" to auth.currentUser?.uid,
                                     "name" to name
                                 )
+                                val userName= hashMapOf(
+                                        "name" to name
+                                    )
                                    nameRef
                                         .document(auth.currentUser!!.uid)
                                         .set(user)
                                         .addOnSuccessListener {
-                                            Log.d("Firestore SignUp", "Документ успешно добавлен")
+                                            Log.d("Firestore SignUp", "имя успешно добавлен")
                                         }
                                         .addOnFailureListener { e ->
-                                            Log.w("Firestore", "Ошибка добавления документа", e)
+                                            Log.w("Firestore", "Ошибка добавления имени", e)
                                         }
+                                db.collection("users_location")
+                                    .document(auth.currentUser!!.uid)
+                                    .set(userName, SetOptions.merge())
+                                    .addOnSuccessListener {
+                                        Log.d("Firestore", "имя успешно добавлено пользователю")
+                                    }
+                                    .addOnFailureListener {
+                                        Log.d("Firestore", "Ошибка добавления имени к пользователю", it)
+                                    }
 
                                 // Только при успехе переходим на home
-                                navController.navigate("home") {
+                                navController.navigate("home/") {
                                     popUpTo("signup") { inclusive = true }
                                 }
                             },

@@ -18,6 +18,8 @@ import com.example.foodtogether.Location.Contacts
 import com.example.foodtogether.Groups.About
 import com.example.foodtogether.Groups.Bascket
 import com.example.foodtogether.Groups.ChooseShop
+import com.example.foodtogether.Groups.OnSuccessPay
+import com.example.foodtogether.Groups.PayScreen
 import com.example.foodtogether.loginSignup.LogIn
 import com.example.foodtogether.loginSignup.SignUp
 import com.example.foodtogether.ui.theme.FoodTogetherTheme
@@ -45,13 +47,22 @@ fun Main() {
     val navController = rememberNavController()
     Column() {
 
-        NavHost(navController, startDestination = NavRoutes.Home.route, modifier = Modifier.weight(1f)) {
-            composable(NavRoutes.Home.route) { Home( navController)}
+        NavHost(navController, startDestination = NavRoutes.Home.route+"/{shopName}", modifier = Modifier.weight(1f)) {
+            composable(NavRoutes.Home.route+"/{shopName}") {
+                    stackEntry ->
+                val shopName = stackEntry.arguments?.getString("shopName") ?:""
+                Home( navController, shopName)}
             composable(NavRoutes.Contacts.route) { Contacts(navController)  }
             composable(NavRoutes.About.route) { About(navController) }
             composable(NavRoutes.Login.route) { LogIn(navController) }
-            composable(NavRoutes.Bascket.route) { Bascket(navController) }
+            composable(NavRoutes.PaySucc.route) { OnSuccessPay(navController) }
+            composable(NavRoutes.Bascket.route+"/{groupId}") { stackEntry ->
+                val groupId = stackEntry.arguments?.getString("groupId") ?:""
+                Bascket(navController, groupId) }
             composable(NavRoutes.SignUp.route) { SignUp(navController) }
+            composable(NavRoutes.Pay.route+"/{groupId}") { stackEntry ->
+                val groupId = stackEntry.arguments?.getString("groupId") ?:""
+                PayScreen(navController, groupId) }
             composable(NavRoutes.ChooseShop.route+"/{groupId}") { stackEntry ->
                 val groupId = stackEntry.arguments?.getString("groupId") ?:""
                 ChooseShop(navController,groupId ) }

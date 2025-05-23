@@ -77,7 +77,7 @@ fun ChooseShop(navController: NavController, groupId: String ="") {
                     Button(
                         onClick = { selectedOption = option.name
                             OnChooseShop(db, userId, option.name, groupId)
-                                  navController.navigate("bascket"){
+                                  navController.navigate("bascket/${groupId}"){
                                       popUpTo("chooseShop") { inclusive = false }
                                   }
                                   },

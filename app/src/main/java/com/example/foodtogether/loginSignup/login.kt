@@ -114,7 +114,7 @@ fun LogIn(navController: NavController){
                         password = password,
                         onSuccess = {
                             // Только при успехе переходим на home
-                            navController.navigate("home") {
+                            navController.navigate("home/") {
                                 popUpTo("signup") { inclusive = true }
                             }
                         },

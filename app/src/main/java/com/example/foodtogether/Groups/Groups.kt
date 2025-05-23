@@ -27,7 +27,7 @@ class GroupsViewModel : ViewModel() {
         data class Success(val groups: List<GroupsData>) : GroupsState()
         data class Error(val message: String) : GroupsState()
     }
-    
+
     fun loadUserGroups(userId: String?) {
         if (userId == null) {
             _groupsState.value = GroupsState.Error("User ID is null")
@@ -58,6 +58,7 @@ class GroupsViewModel : ViewModel() {
     private suspend fun loadGroupsInfo(groupIds: List<String>): List<GroupsData> {
         return groupIds.mapNotNull { groupId ->
             try {
+
                 val doc = groupRef.document(groupId).get().await()
                 GroupsData(
                     groupId = groupId,

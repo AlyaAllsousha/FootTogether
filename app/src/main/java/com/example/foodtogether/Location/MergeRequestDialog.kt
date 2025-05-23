@@ -141,4 +141,6 @@ fun AddSelectedInGroup(userId: String, db:FirebaseFirestore, groupId: String){
         .addOnFailureListener {
             Log.d("Firestore", "Ошибка добавления группы к пользователю", it)
         }
+
+
 }

@@ -62,7 +62,9 @@ fun addDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Название") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp)
+
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

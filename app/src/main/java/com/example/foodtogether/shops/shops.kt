@@ -41,11 +41,22 @@ import com.yandex.runtime.image.ImageProvider
 
 
 @Composable
-fun shops() {
+fun shops(shop: String) {
     val markets = ListOfMarkets().markets
     val WebUrl = remember { mutableStateOf("") }
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    if(shop!="" && !shop.isNullOrBlank()){
+        when (shop){
+            "Перекресток" -> WebUrl.value="https://www.perekrestok.ru"
+            "Ашан" -> WebUrl.value="https://www.auchan.ru/"
+            "Пятерочка" -> WebUrl.value="https://5ka.ru/"
+            "Лента" -> WebUrl.value="https://lenta.com"
+            "Окей" -> WebUrl.value="https://www.okeydostavka.ru"
+            "Дикси" -> WebUrl.value="https://dixy.ru"
+            "Спар" -> WebUrl.value="https://spar-online.ru"
+        }
+    }
     Box (
         modifier = Modifier
             .clip(RoundedCornerShape(18.dp))

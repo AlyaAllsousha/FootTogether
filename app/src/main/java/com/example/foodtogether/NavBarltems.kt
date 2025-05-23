@@ -10,7 +10,7 @@ object NavBarItems {
         BarItem(
             title = "Главная",
             image = Icons.Filled.Home,
-            route = "home"
+            route = "home/"
         ),
         BarItem(
             title = "Карта",
