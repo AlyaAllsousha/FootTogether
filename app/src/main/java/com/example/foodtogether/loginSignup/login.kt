@@ -94,7 +94,6 @@ fun LogIn(navController: NavController){
 
         Spacer(Modifier.height(24.dp))
 
-        // Кнопка входа
         Button(
 
             onClick = {

@@ -73,36 +73,12 @@ import kotlin.math.abs
 
 fun Home(  navController: NavController?, shopName:String) {
     val auth = Firebase.auth
-    var name = remember { mutableStateOf("") }
+    val name = remember { mutableStateOf("") }
     val db = FirebaseFirestore.getInstance()
     val userId = auth.currentUser?.uid ?: ""
     val email = auth.currentUser?.email ?: ""
 
-    LaunchedEffect(Unit) {
-        if (userId != "") {
-            val user = hashMapOf(
-                "userId" to userId,
-                "email" to email,
-                "name" to name,
-                "position" to GeoPoint(0.0, 0.0),
-                "timestamp" to FieldValue.serverTimestamp(),
-                "groupId" to listOf("")
-            )
-            db.collection("users_location")
-                .document(userId)
-                .get()
-                .addOnSuccessListener {
 
-                    Log.d("Firestore", "Документ успешно добавлен")
-                }
-                .addOnFailureListener { e ->
-                    db.collection("users_location")
-                        .document(userId)
-                        .set(user, SetOptions.merge())
-                    Log.w("Firestore", "Ошибка добавления документа", e)
-                }
-        }
-    }
     if (auth.currentUser == null) {
         Column(
             modifier = Modifier
@@ -193,7 +169,7 @@ fun Home(  navController: NavController?, shopName:String) {
 
     }
 }
-     fun getName(userId: String, db: FirebaseFirestore, onSucc: (String) -> Unit) {
+fun getName(userId: String, db: FirebaseFirestore, onSucc: (String) -> Unit) {
         val nameRef = db.collection("user_names")
         nameRef.document(userId)
             .get()

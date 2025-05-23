@@ -44,7 +44,6 @@ import com.yandex.runtime.image.ImageProvider
 fun shops(shop: String) {
     val markets = ListOfMarkets().markets
     val WebUrl = remember { mutableStateOf("") }
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     if(shop!="" && !shop.isNullOrBlank()){
         when (shop){
@@ -55,6 +54,7 @@ fun shops(shop: String) {
             "Окей" -> WebUrl.value="https://www.okeydostavka.ru"
             "Дикси" -> WebUrl.value="https://dixy.ru"
             "Спар" -> WebUrl.value="https://spar-online.ru"
+            else -> WebUrl.value=""
         }
     }
     Box (
