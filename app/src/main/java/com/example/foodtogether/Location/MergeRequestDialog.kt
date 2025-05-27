@@ -93,7 +93,6 @@ fun MergeRequestDialog(
                 },
                 confirmButton = {
                     Button(
-
                         onClick = {
                             if(selectedOption != ""){
                                 onConfirm(selectedOption)

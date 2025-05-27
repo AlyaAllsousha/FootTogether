@@ -2,20 +2,14 @@ package com.example.foodtogether.Groups
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -24,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,14 +42,15 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun ChooseShop(navController: NavController, groupId: String ="") {
+fun ChooseShop(navController: NavController, groupId: String = "") {
     val options = ListOfMarkets().markets
     var selectedOption by remember { mutableStateOf("") }
     val db = FirebaseFirestore.getInstance()
-    val userId = Firebase.auth.currentUser?.uid ?:""
-    if(groupId != "") {
+    val userId = Firebase.auth.currentUser?.uid ?: ""
+    if (groupId != "") {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(22.dp)
         ) {
             Text(
@@ -75,12 +69,13 @@ fun ChooseShop(navController: NavController, groupId: String ="") {
             ) {
                 items(options) { option ->
                     Button(
-                        onClick = { selectedOption = option.name
+                        onClick = {
+                            selectedOption = option.name
                             OnChooseShop(db, userId, option.name, groupId)
-                                  navController.navigate("bascket/${groupId}"){
-                                      popUpTo("chooseShop") { inclusive = false }
-                                  }
-                                  },
+                            navController.navigate("bascket/${groupId}") {
+                                popUpTo("chooseShop") { inclusive = false }
+                            }
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
@@ -116,8 +111,8 @@ fun ChooseShop(navController: NavController, groupId: String ="") {
     }
 }
 
-fun OnChooseShop(db:FirebaseFirestore, userId:String, shop: String, groupId: String){
-    if(userId!=""){
+fun OnChooseShop(db: FirebaseFirestore, userId: String, shop: String, groupId: String) {
+    if (userId != "") {
         val user = hashMapOf(
             "selectedShop" to shop
         )
